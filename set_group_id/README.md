@@ -19,4 +19,4 @@ O H 1.3
 
 If box size is written in the header of an input xyz file,
 set_group_id.py treat it as a periodic system.
-If `-b` option is specified, it is treated as a non-periodic system even if box size is written.
+If `-n` option is specified, it is treated as a non-periodic system even if box size is written.
