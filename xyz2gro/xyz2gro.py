@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     output_gro_path = re.sub('\.[^.]+$', '.gro', input_xyz_path)
     with open(output_gro_path, 'w') as fp:
-        template = '    1PDB    %3s%5d%8.3f%8.3f%8.3f \n'
+        template = "%8s%7s%5d%8.3f%8.3f%8.3f\n"
         if comment[0] == '#':
             comment = 'dummy\n'
         fp.write(comment)
@@ -41,7 +41,9 @@ if __name__ == '__main__':
                 tail = '  '
             else:
                 tail = 'AX'  # Comes from Morino's bachelor thesis "A.1.10 convert xyz2gro.py".
-            fp.write(template%(element + tail, (i + 1) % 100000,
+            fp.write(template%("1PDB",
+                               element + tail.strip(),
+                               (i + 1) % 100000,
                                coordinates[0] * NM_PER_ANGSTROM,
                                coordinates[1] * NM_PER_ANGSTROM,
                                coordinates[2] * NM_PER_ANGSTROM))
