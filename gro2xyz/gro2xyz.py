@@ -1,12 +1,34 @@
 # coding: utf-8
 import argparse
+import os
 import os.path
 import re
 import sys
 
-xyz_line_template = '%-3s %8.5f %8.5f %8.5f\n'
+xyz_line_template = '%10s %8.5f %8.5f %8.5f\n'
 XYZ_HEADER_WIDTH = 59
 ANGSTROM_PER_NM = 10.0
+
+def read_xyz(fp_xyz_check):
+    check_xyz = []
+    atom_info = fp_xyz_check.readline()
+    comment = fp_xyz_check.readline()
+    for line in fp_xyz_check:
+        ss = line.split()
+        element = ss[0]
+        x = float(ss[1])
+        y = float(ss[2])
+        z = float(ss[3])
+        coordinates = [x, y, z]
+        check_xyz.append((element, coordinates))
+    return atom_info, comment, check_xyz
+
+def write_xyz(fp_write_xyz, atom_info, comment, check_xyz):
+    fp_write_xyz.write("%s" % (atom_info))
+    fp_write_xyz.write("%s" % (comment))
+    for e, c in check_xyz:
+        fp_write_xyz.write("%-3s %8.5f %8.5f %8.5f\n" % (e, c[0], c[1], c[2]))
+
 
 def main(fp_gro, fp_xyz):
     gro_region = 'head'
@@ -65,5 +87,11 @@ if __name__ == '__main__':
     if os.path.exists(output_path) and not args.to_force_overwrite:
         print 'output file "%s" already exists. Specify -f to force overwriting' % output_path
         sys.exit(1)
+        
     with open(args.input_path) as fp_gro, open(output_path, 'w') as fp_xyz:
         main(fp_gro, fp_xyz)
+    with open(output_path) as fp_xyz_check:
+        atom_info, comment, check_xyz = read_xyz(fp_xyz_check)
+    os.remove(output_path)
+    with open(output_path, "w") as fp_write_xyz:
+        write_xyz(fp_write_xyz, atom_info, comment, check_xyz)
